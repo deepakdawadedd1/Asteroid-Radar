@@ -2,14 +2,29 @@ package com.udacity.nanodegree.asteroidradar
 
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
+import com.udacity.nanodegree.asteroidradar.main.AsteroidAdapter
+
+/**
+ * Binding adapter used to display images from URL using Glide
+ */
+@BindingAdapter("pictureOfDay")
+fun AppCompatImageView.setPictureOfDay(pictureOfDay: PictureOfDay?) {
+    if (pictureOfDay?.mediaType == "image")
+        Picasso.with(context).load(pictureOfDay.url).into(this)
+    else setImageResource(R.drawable.placeholder_picture_of_day)
+    contentDescription = pictureOfDay?.title
+}
 
 @BindingAdapter("statusIcon")
-fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
+fun AppCompatImageView.bindAsteroidStatusImage(isHazardous: Boolean) {
     if (isHazardous) {
-        imageView.setImageResource(R.drawable.ic_status_potentially_hazardous)
+        setImageResource(R.drawable.ic_status_potentially_hazardous)
     } else {
-        imageView.setImageResource(R.drawable.ic_status_normal)
+        setImageResource(R.drawable.ic_status_normal)
     }
 }
 
