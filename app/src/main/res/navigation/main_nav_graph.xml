@@ -22,7 +22,7 @@
 
         <argument
             android:name="selectedAsteroid"
-            app:argType="com.udacity.nanodegree.asteroidradar.Asteroid" />
+            app:argType="com.udacity.nanodegree.asteroidradar.database.entities.Asteroid" />
     </fragment>
 
 </navigation>

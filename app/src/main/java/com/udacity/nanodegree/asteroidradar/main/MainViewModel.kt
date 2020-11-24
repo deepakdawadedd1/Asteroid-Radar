@@ -1,25 +1,29 @@
 package com.udacity.nanodegree.asteroidradar.main
 
+import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
-import com.udacity.nanodegree.asteroidradar.Asteroid
 import com.udacity.nanodegree.asteroidradar.Constants.API_QUERY_DATE_FORMAT
 import com.udacity.nanodegree.asteroidradar.PictureOfDay
+import com.udacity.nanodegree.asteroidradar.database.AsteroidDatabase
+import com.udacity.nanodegree.asteroidradar.database.entities.Asteroid
 import com.udacity.nanodegree.asteroidradar.repository.AsteroidRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : ViewModel() {
+    private val database = AsteroidDatabase.getDataBase(application)
+
     private val currentDate = MutableLiveData<Date>()
-    private val repository = AsteroidRepository()
+    private val repository = AsteroidRepository(database.asteroidDao)
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay> get() = _pictureOfDay
 
-    private val _feeds = MutableLiveData<List<Asteroid>>()
-    val feeds: LiveData<List<Asteroid>> get() = _feeds
+    val feeds: LiveData<List<Asteroid>> get() = repository.feeds
 
-    private val _showProgress = MutableLiveData<Boolean>()
+    private val _showProgress = MutableLiveData(true)
     val showProgress: LiveData<Boolean> get() = _showProgress
 
     private val startDate = Transformations.map(currentDate) {
@@ -50,16 +54,22 @@ class MainViewModel : ViewModel() {
     private fun loadFeeds() {
         _showProgress.value = true
         viewModelScope.launch {
-            val feeds = repository.loadFeeds(startDate.value ?: "", endDate.value ?: "")
-            _feeds.postValue(feeds)
-            _showProgress.postValue(false)
+            try {
+                repository.loadFeeds(startDate.value ?: "", endDate.value ?: "")
+            } catch (ex: Exception) {
+                Log.e("MainViewModel", ex.message, ex.cause)
+            }
         }
     }
 
     private fun fetchPictureOfDay() {
         viewModelScope.launch {
-            val picture = repository.getPictureOfDay()
-            _pictureOfDay.postValue(picture)
+            try {
+                val picture = repository.getPictureOfDay()
+                _pictureOfDay.postValue(picture)
+            } catch (ex: Exception) {
+                Log.e("MainViewModel", ex.message, ex.cause)
+            }
         }
     }
 
@@ -69,5 +79,9 @@ class MainViewModel : ViewModel() {
 
     fun navigationDone() {
         _navigator.value = null
+    }
+
+    fun progress(empty: Boolean) {
+        _showProgress.value = empty
     }
 }

@@ -4,9 +4,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import com.udacity.nanodegree.asteroidradar.main.AsteroidAdapter
 
 /**
  * Binding adapter used to display images from URL using Glide
@@ -14,7 +12,8 @@ import com.udacity.nanodegree.asteroidradar.main.AsteroidAdapter
 @BindingAdapter("pictureOfDay")
 fun AppCompatImageView.setPictureOfDay(pictureOfDay: PictureOfDay?) {
     if (pictureOfDay?.mediaType == "image")
-        Picasso.with(context).load(pictureOfDay.url).into(this)
+        Picasso.with(context).load(pictureOfDay.url).error(R.drawable.placeholder_picture_of_day)
+            .into(this)
     else setImageResource(R.drawable.placeholder_picture_of_day)
     contentDescription = pictureOfDay?.title
 }

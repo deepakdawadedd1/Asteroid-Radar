@@ -1,21 +1,28 @@
 package com.udacity.nanodegree.asteroidradar.repository
 
-import com.udacity.nanodegree.asteroidradar.Asteroid
+import androidx.lifecycle.LiveData
 import com.udacity.nanodegree.asteroidradar.PictureOfDay
 import com.udacity.nanodegree.asteroidradar.api.parseAsteroidsJsonResult
+import com.udacity.nanodegree.asteroidradar.database.dao.AsteroidDao
+import com.udacity.nanodegree.asteroidradar.database.entities.Asteroid
 import com.udacity.nanodegree.asteroidradar.network.Networking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 
-class AsteroidRepository() {
+class AsteroidRepository(private val asteroidDao: AsteroidDao) {
 
-    suspend fun loadFeeds(startDate: String, endDate: String): List<Asteroid> {
-        return withContext(Dispatchers.IO) {
-            val response = Networking.scalerNetworkService.getFeeds(startDate, endDate)
-            parseAsteroidsJsonResult(JSONObject(response))
-        }
+    val feeds: LiveData<List<Asteroid>>
+        get() = asteroidDao.getFeeds()
+
+    val getPictureOfDay: PictureOfDay?
+        get() = null
+
+    suspend fun loadFeeds(startDate: String, endDate: String) {
+        val response = Networking.scalerNetworkService.getFeeds(startDate, endDate)
+        val feeds = parseAsteroidsJsonResult(JSONObject(response))
+        asteroidDao.insertAll(* feeds.toTypedArray())
     }
 
     suspend fun getPictureOfDay(): PictureOfDay {

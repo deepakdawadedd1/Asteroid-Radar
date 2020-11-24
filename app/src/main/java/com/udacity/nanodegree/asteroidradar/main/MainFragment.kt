@@ -3,24 +3,27 @@ package com.udacity.nanodegree.asteroidradar.main
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.udacity.nanodegree.asteroidradar.Asteroid
 import com.udacity.nanodegree.asteroidradar.R
+import com.udacity.nanodegree.asteroidradar.database.entities.Asteroid
 import com.udacity.nanodegree.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.nanodegree.asteroidradar.databinding.ListItemAsteroidBinding
 
 class MainFragment : Fragment() {
 
-    private val viewModel by viewModels<MainViewModel>()
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
+
         val binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
 
@@ -30,6 +33,7 @@ class MainFragment : Fragment() {
         }
         binding.asteroidRecycler.adapter = adapter
         viewModel.feeds.observe(viewLifecycleOwner) {
+            viewModel.progress(it.isNullOrEmpty())
             adapter.submitList(it)
         }
 

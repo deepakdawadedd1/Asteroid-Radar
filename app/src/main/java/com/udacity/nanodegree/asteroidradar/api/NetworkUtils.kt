@@ -1,7 +1,8 @@
 package com.udacity.nanodegree.asteroidradar.api
 
-import com.udacity.nanodegree.asteroidradar.Asteroid
 import com.udacity.nanodegree.asteroidradar.Constants
+import com.udacity.nanodegree.asteroidradar.database.entities.Asteroid
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -14,7 +15,11 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
 
     val nextSevenDaysFormattedDates = getNextSevenDaysFormattedDates()
     for (formattedDate in nextSevenDaysFormattedDates) {
-        val dateAsteroidJsonArray = nearEarthObjectsJson.getJSONArray(formattedDate)
+        val dateAsteroidJsonArray = try {
+            nearEarthObjectsJson.getJSONArray(formattedDate)
+        } catch (ex: Exception) {
+            JSONArray()
+        }
 
         for (i in 0 until dateAsteroidJsonArray.length()) {
             val asteroidJson = dateAsteroidJsonArray.getJSONObject(i)
