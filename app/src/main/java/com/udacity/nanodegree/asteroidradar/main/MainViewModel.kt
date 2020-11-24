@@ -2,20 +2,20 @@ package com.udacity.nanodegree.asteroidradar.main
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
-import com.udacity.nanodegree.asteroidradar.Constants.API_QUERY_DATE_FORMAT
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.udacity.nanodegree.asteroidradar.PictureOfDay
+import com.udacity.nanodegree.asteroidradar.api.getNextSevenDaysFormattedDates
 import com.udacity.nanodegree.asteroidradar.database.AsteroidDatabase
 import com.udacity.nanodegree.asteroidradar.database.entities.Asteroid
 import com.udacity.nanodegree.asteroidradar.repository.AsteroidRepository
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainViewModel(application: Application) : ViewModel() {
     private val database = AsteroidDatabase.getDataBase(application)
 
-    private val currentDate = MutableLiveData<Date>()
     private val repository = AsteroidRepository(database.asteroidDao)
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
@@ -26,36 +26,23 @@ class MainViewModel(application: Application) : ViewModel() {
     private val _showProgress = MutableLiveData(true)
     val showProgress: LiveData<Boolean> get() = _showProgress
 
-    private val startDate = Transformations.map(currentDate) {
-        val formattedDate = SimpleDateFormat(API_QUERY_DATE_FORMAT).format(it)
-        formattedDate
-    }
+    private val sevenDaysList = getNextSevenDaysFormattedDates()
 
     private val _navigator: MutableLiveData<Asteroid> = MutableLiveData()
     val navigator: LiveData<Asteroid>
         get() = _navigator
 
-    private val endDate = Transformations.map(currentDate) {
-        val calendar = Calendar.getInstance().apply {
-            time = it
-        }
-        val d = calendar.get(Calendar.DAY_OF_WEEK)
-        calendar.set(Calendar.DAY_OF_WEEK, d + 7)
-        val formattedDate = SimpleDateFormat(API_QUERY_DATE_FORMAT).format(calendar.time)
-        formattedDate
-    }
 
     init {
         fetchPictureOfDay()
         loadFeeds()
-        currentDate.value = Calendar.getInstance().time
     }
 
     private fun loadFeeds() {
         _showProgress.value = true
         viewModelScope.launch {
             try {
-                repository.loadFeeds(startDate.value ?: "", endDate.value ?: "")
+                repository.loadFeeds(sevenDaysList.first(), sevenDaysList.last())
             } catch (ex: Exception) {
                 Log.e("MainViewModel", ex.message, ex.cause)
             }
