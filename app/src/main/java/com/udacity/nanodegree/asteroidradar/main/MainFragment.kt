@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -24,10 +25,19 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
-        val adapter = AsteroidAdapter()
+        val adapter = AsteroidAdapter {
+            viewModel.navigateToDetails(it)
+        }
         binding.asteroidRecycler.adapter = adapter
         viewModel.feeds.observe(viewLifecycleOwner) {
             adapter.submitList(it)
+        }
+
+        viewModel.navigator.observe(viewLifecycleOwner) { asteroid ->
+            asteroid?.let {
+                findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
+                viewModel.navigationDone()
+            }
         }
 
         return binding.root
@@ -43,20 +53,22 @@ class MainFragment : Fragment() {
     }
 }
 
-class AsteroidAdapter() : ListAdapter<Asteroid, AsteroidAdapter.ViewHolder>(AsteroidDiffCallback) {
+class AsteroidAdapter(private val itemClickListener: OnItemClickListener) :
+    ListAdapter<Asteroid, AsteroidAdapter.ViewHolder>(AsteroidDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.getInstance(parent)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, itemClickListener)
     }
 
     class ViewHolder private constructor(private val binding: ListItemAsteroidBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(asteroid: Asteroid) {
+        fun bind(asteroid: Asteroid, listener: OnItemClickListener) {
             binding.asteroid = asteroid
+            binding.listener = listener
             binding.executePendingBindings()
         }
 
@@ -76,5 +88,9 @@ class AsteroidAdapter() : ListAdapter<Asteroid, AsteroidAdapter.ViewHolder>(Aste
         override fun areContentsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
             return oldItem == newItem
         }
+    }
+
+    fun interface OnItemClickListener {
+        fun onItemClick(asteroid: Asteroid)
     }
 }

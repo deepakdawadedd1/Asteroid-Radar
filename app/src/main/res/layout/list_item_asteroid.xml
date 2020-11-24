@@ -8,12 +8,17 @@
         <variable
             name="asteroid"
             type="com.udacity.nanodegree.asteroidradar.Asteroid" />
+
+        <variable
+            name="listener"
+            type="com.udacity.nanodegree.asteroidradar.main.AsteroidAdapter.OnItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp">
+        android:layout_margin="16dp"
+        android:onClick="@{()-> listener.onItemClick(asteroid)}">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/name"

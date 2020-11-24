@@ -20,12 +20,17 @@ class MainViewModel : ViewModel() {
     val feeds: LiveData<List<Asteroid>> get() = _feeds
 
     private val _showProgress = MutableLiveData<Boolean>()
-    val showProgress :LiveData<Boolean> get() = _showProgress
+    val showProgress: LiveData<Boolean> get() = _showProgress
 
     private val startDate = Transformations.map(currentDate) {
         val formattedDate = SimpleDateFormat(API_QUERY_DATE_FORMAT).format(it)
         formattedDate
     }
+
+    private val _navigator: MutableLiveData<Asteroid> = MutableLiveData()
+    val navigator: LiveData<Asteroid>
+        get() = _navigator
+
     private val endDate = Transformations.map(currentDate) {
         val calendar = Calendar.getInstance().apply {
             time = it
@@ -56,5 +61,13 @@ class MainViewModel : ViewModel() {
             val picture = repository.getPictureOfDay()
             _pictureOfDay.postValue(picture)
         }
+    }
+
+    fun navigateToDetails(asteroid: Asteroid) {
+        _navigator.value = asteroid
+    }
+
+    fun navigationDone() {
+        _navigator.value = null
     }
 }
