@@ -26,8 +26,6 @@ class MainViewModel(application: Application) : ViewModel() {
     private val _showProgress = MutableLiveData(true)
     val showProgress: LiveData<Boolean> get() = _showProgress
 
-    private val sevenDaysList = getNextSevenDaysFormattedDates()
-
     private val _navigator: MutableLiveData<Asteroid> = MutableLiveData()
     val navigator: LiveData<Asteroid>
         get() = _navigator
@@ -42,7 +40,7 @@ class MainViewModel(application: Application) : ViewModel() {
         _showProgress.value = true
         viewModelScope.launch {
             try {
-                repository.loadFeeds(sevenDaysList.first(), sevenDaysList.last())
+                repository.loadFeeds()
             } catch (ex: Exception) {
                 Log.e("MainViewModel", ex.message, ex.cause)
             }
