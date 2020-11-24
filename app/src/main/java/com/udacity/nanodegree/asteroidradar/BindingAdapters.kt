@@ -1,6 +1,5 @@
 package com.udacity.nanodegree.asteroidradar
 
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
@@ -28,11 +27,13 @@ fun AppCompatImageView.bindAsteroidStatusImage(isHazardous: Boolean) {
 }
 
 @BindingAdapter("asteroidStatusImage")
-fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) {
-    if (isHazardous) {
-        imageView.setImageResource(R.drawable.asteroid_hazardous)
+fun AppCompatImageView.bindDetailsStatusImage(isHazardous: Boolean) {
+    contentDescription = if (isHazardous) {
+        setImageResource(R.drawable.asteroid_hazardous)
+        context.getString(R.string.potentially_hazardous_asteroid_image)
     } else {
-        imageView.setImageResource(R.drawable.asteroid_safe)
+        setImageResource(R.drawable.asteroid_safe)
+        context.getString(R.string.not_hazardous_asteroid_image)
     }
 }
 
