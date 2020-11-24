@@ -6,25 +6,21 @@ import com.udacity.nanodegree.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.nanodegree.asteroidradar.network.Networking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 
-/**
- * Created by @author Deepak Dawade on 11/16/2020 at 8:11 PM.
- * Copyright (c) 2020 deepak.dawade.dd@gmail.com All rights reserved.
- *
- */
 class AsteroidRepository() {
 
     suspend fun loadFeeds(startDate: String, endDate: String): List<Asteroid> {
         return withContext(Dispatchers.IO) {
-            val response = Networking.networkService.getFeeds(startDate, endDate)
-            parseAsteroidsJsonResult(response)
+            val response = Networking.scalerNetworkService.getFeeds(startDate, endDate)
+            parseAsteroidsJsonResult(JSONObject(response))
         }
     }
 
     suspend fun getPictureOfDay(): PictureOfDay {
         return withContext(Dispatchers.IO) {
-            val response = Networking.networkService.getPictureOfDay()
+            val response = Networking.moshiNetworkService.getPictureOfDay()
             response
         }
     }

@@ -14,6 +14,6 @@ interface NetworkService {
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
         @Query("api_key") apiKey: String = API_KEY
-    ): JSONObject
+    ): String
 
 }

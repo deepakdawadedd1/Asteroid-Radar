@@ -4,6 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 const val BASE_URL = "https://api.nasa.gov/"
 const val API_KEY = "gC6YOOhUGT72ddgwvfTqceuF5v85lHCKqMue1r9x"
@@ -21,10 +22,15 @@ private val moshi = Moshi.Builder()
  */
 object Networking {
     // Configure retrofit to parse JSON and use coroutines
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
+    private val retrofitBuilder = Retrofit.Builder().baseUrl(BASE_URL)
+    val scalerNetworkService: NetworkService = retrofitBuilder.addConverterFactory(
+        ScalarsConverterFactory.create()
+    )
         .build()
-
-    val networkService: NetworkService = retrofit.create(NetworkService::class.java)
+        .create(NetworkService::class.java)
+    val moshiNetworkService: NetworkService = retrofitBuilder.addConverterFactory(
+        MoshiConverterFactory.create(moshi)
+    )
+        .build()
+        .create(NetworkService::class.java)
 }
