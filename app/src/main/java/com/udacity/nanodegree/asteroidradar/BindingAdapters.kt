@@ -17,7 +17,14 @@ fun AppCompatImageView.setPictureOfDay(pictureOfDay: PictureOfDay?) {
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(this)
     else setImageResource(R.drawable.placeholder_picture_of_day)
-    contentDescription = pictureOfDay?.title
+
+    contentDescription = if (pictureOfDay?.title.isNullOrEmpty())
+        context.getString(R.string.this_is_nasa_s_picture_of_day_showing_nothing_yet)
+    else context.getString(
+        R.string.nasa_picture_of_day_content_description_format,
+        pictureOfDay?.title
+    )
+
 }
 
 @BindingAdapter("statusIcon")
