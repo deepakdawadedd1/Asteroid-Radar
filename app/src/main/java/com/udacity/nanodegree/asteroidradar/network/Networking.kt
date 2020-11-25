@@ -7,7 +7,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 const val BASE_URL = "https://api.nasa.gov/"
-const val API_KEY = "gC6YOOhUGT72ddgwvfTqceuF5v85lHCKqMue1r9x"
+const val API_KEY = ""//TODO("PASTE Your API_KEY_HERE")
 
 /**
  * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
