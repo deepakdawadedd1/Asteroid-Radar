@@ -43,7 +43,7 @@ class MainFragment : Fragment() {
                 viewModel.navigationDone()
             }
         }
-
+        setHasOptionsMenu(true)
         return binding.root
     }
 

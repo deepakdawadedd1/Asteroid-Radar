@@ -22,20 +22,20 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/name"
+            style="@style/TextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{asteroid.codename}"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="887383" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/date"
+            style="@style/TextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{asteroid.closeApproachDate}"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/name"
             tools:text="2020-11-16" />
