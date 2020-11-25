@@ -34,6 +34,7 @@ class MainFragment : Fragment() {
         binding.asteroidRecycler.adapter = adapter
         viewModel.feeds.observe(viewLifecycleOwner) {
             viewModel.progress(it.isNullOrEmpty())
+            binding.asteroidRecycler.smoothScrollToPosition(0)
             adapter.submitList(it)
         }
 
@@ -53,7 +54,21 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return true
+        return when (item.itemId) {
+            R.id.menu_show_week -> {
+                viewModel.filter(Filter.WEEK)
+                true
+            }
+            R.id.menu_show_today -> {
+                viewModel.filter(Filter.TODAY)
+                true
+            }
+            R.id.menu_show_saved -> {
+                viewModel.filter(Filter.SAVED)
+                true
+            }
+            else -> false
+        }
     }
 }
 

@@ -2,15 +2,12 @@ package com.udacity.nanodegree.asteroidradar.main
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.udacity.nanodegree.asteroidradar.PictureOfDay
-import com.udacity.nanodegree.asteroidradar.api.getNextSevenDaysFormattedDates
 import com.udacity.nanodegree.asteroidradar.database.AsteroidDatabase
 import com.udacity.nanodegree.asteroidradar.database.entities.Asteroid
 import com.udacity.nanodegree.asteroidradar.repository.AsteroidRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : ViewModel() {
@@ -21,7 +18,9 @@ class MainViewModel(application: Application) : ViewModel() {
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay> get() = _pictureOfDay
 
-    val feeds: LiveData<List<Asteroid>> get() = repository.feeds
+    val feeds: LiveData<List<Asteroid>> = Transformations.map(repository.feeds) {
+        it
+    }
 
     private val _showProgress = MutableLiveData(true)
     val showProgress: LiveData<Boolean> get() = _showProgress
@@ -40,7 +39,7 @@ class MainViewModel(application: Application) : ViewModel() {
         _showProgress.value = true
         viewModelScope.launch {
             try {
-                repository.loadFeeds()
+                repository.fetchFeeds()
             } catch (ex: Exception) {
                 Log.e("MainViewModel", ex.message, ex.cause)
             }
@@ -68,5 +67,11 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun progress(empty: Boolean) {
         _showProgress.value = empty
+    }
+
+    fun filter(filter: Filter) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.filterFeeds(filter)
+        }
     }
 }

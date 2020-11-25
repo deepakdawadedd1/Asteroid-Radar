@@ -16,7 +16,7 @@ class RefreshDataWork(appContext: Context, params: WorkerParameters) :
         val database = AsteroidDatabase.getDataBase(applicationContext)
         val repository = AsteroidRepository(database.asteroidDao)
         return try {
-            repository.loadFeeds()
+            repository.fetchFeeds()
             Result.success()
         } catch (ex: Exception) {
             Result.retry()
